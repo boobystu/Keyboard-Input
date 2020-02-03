@@ -2,10 +2,14 @@ questionY = 100
 answerAY = 200
 answerBY = 300
 answerCY = 400
-
+questionCounter = 1
+score = 0
 wrapPoint = 450
 
 questions = {}
+
+fonts = {}
+fonts.large = love.graphics.newFont("assets/gamer.ttf", 36)
 
 function string:split( inSplitPattern, outResults )
   if not outResults then
@@ -23,6 +27,9 @@ function string:split( inSplitPattern, outResults )
 end
 
 function PrintQuestionsAndAnswers()
+
+  love.graphics.setFont(fonts.large)
+
   local allTextItems = questions[questionCounter]:split(",")
   q = allTextItems[1]
   a1 = allTextItems[2]
@@ -56,17 +63,44 @@ function ReadQuestionFile()
 end
 
 function PrintScore()
+
+  love.graphics.setFont(fonts.large)
+
   love.graphics.print("SCORE: " .. score, 10, 10)
 end
 
 function PrintTimer()
 
-  love.graphics.print(string.format("Time: %.0f", os.clock()), 200, 10)
+  love.graphics.setFont(fonts.large)
+
+  love.graphics.print(string.format("Time: %.0f", gameTimer), 200, 10)
+
+  gameTimer = totalGameTime - os.clock()
+end
+
+function PrintCountdown()
+  love.graphics.setFont(fonts.large)
+
+  love.graphics.print(string.format("Countdown: %.0f", countdown), (playingAreaMaxX / 2), (windowMaxY / 2))
+
+  countdown = (4 - os.clock())
 end
 
 function NextQuestion()
   if questionCounter < #questions then
     questionCounter = questionCounter + 1
     PrintQuestionsAndAnswers()
+  else
+    gameOver = true
   end
+end
+
+function PrintGameOver()
+
+  local finalScore =  gameTimer * score * 1000
+
+  love.graphics.print("Game Over", (windowMaxX / 2), (windowMaxY / 2))
+
+  love.graphics.print("Final Score:" .. finalScore, (windowMaxX / 2) - 50, (windowMaxY / 2) + 100)
+
 end

@@ -21,6 +21,8 @@ coinC.w = coinWidth
 coinC.correctAnswer = false
 coinC.coinImage = love.graphics.newImage("assets/coinC.png")
 
+math.randomseed(os.time())
+
 function SetUpCoins()
   coins = {}
 

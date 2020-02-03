@@ -3,103 +3,81 @@ require "GraphicsFunctions"
 require "TextFunctions"
 require "Player"
 require "Coins"
+require "Sounds"
 
-  function love.load(arg)
-    math.randomseed(os.time())
+countdown = 4
 
-    ReadQuestionFile()
+totalGameTime = 60 + countdown
 
-    SetupGraphicsImages()
+gameTimer = totalGameTime - os.clock()
 
-    SetupPlayer()
+gameOver = false
 
-    playingAreaMaxX = 800
-    windowMaxX = 1400
+function love.load(arg)
 
-    windowMaxY = 600
+  ReadQuestionFile()
 
-    questionAreaMinX = playingAreaMaxX + images.background:getWidth()
-    questionAreaMaxX = windowMaxX
+  SetupGraphics()
 
-    SetUpCoins()
+  SetupPlayer()
 
-    questionCounter = 1
+  SetUpCoins()
 
-    score = 0
+  SetupSounds()
 
-    love.window.setMode(windowMaxX, windowMaxY)
+end
 
-    sounds = {}
-    sounds.coin = love.audio.newSource("assets/coin.ogg", "static")
+function love.update(dt)
 
-    fonts = {}
-    fonts.large = love.graphics.newFont("assets/gamer.ttf", 36)
+  if gameTimer <= 0 then
+
+    gameOver = true
 
   end
 
-  function love.update(dt)
+  if gameOver == true then
 
-    movementSpeed = 10
+    return
 
-    if love.keyboard.isDown("up") then
-      if player.y > 0 then
-        player.y = player.y - movementSpeed
-      else
-        player.y = 600
-      end
-      player.image = images.player_up
-    end
+  end
 
-    if love.keyboard.isDown("down") then
-      if player.y + player.h < 600 then
-        player.y = player.y + movementSpeed
-      else
-        player.y = 0
-      end
-      player.image = images.player_down
-    end
+  if countdown <= 0 then
 
-    if love.keyboard.isDown("left") then
-      if player.x > 0 then
-        player.x = player.x - movementSpeed
-      else
-        player.x = 800
-      end
-      player.image = images.player_left
-    end
-
-    if love.keyboard.isDown("right") then
-      if player.x + player.w < 800 then
-        player.x = player.x + movementSpeed
-      else
-        player.x = 0
-      end
-      player.image = images.player_right
-    end
+    UpdatePlayerPosition()
 
     CheckForCoinContact()
 
   end
 
-  function love.draw()
+end
 
-    love.graphics.setFont(fonts.large)
+function love.draw()
 
-    --draw background
-    for x=0, playingAreaMaxX, images.background:getWidth() do
-      for y=0, love.graphics.getHeight(), images.background:getHeight() do
-        love.graphics.draw(images.background, x, y)
-      end
-    end
+  if gameOver == true then
 
-    love.graphics.draw(player.image, player.x, player.y)
+    PrintGameOver()
 
-    DrawCoins()
+    return
+
+  end
+
+  DrawBackground()
+
+  DrawPlayer()
+
+  DrawCoins()
+
+  if countdown <= 0 then
 
     PrintScore()
 
     PrintTimer()
 
     PrintQuestionsAndAnswers()
+  else
+
+    PrintCountdown()
 
   end
+
+end
